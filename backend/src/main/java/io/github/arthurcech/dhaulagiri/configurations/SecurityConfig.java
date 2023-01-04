@@ -32,10 +32,10 @@ public class SecurityConfig {
 
 	@Autowired
 	public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter,
-						  JwtAccessDeniedHandler jwtAccessDeniedHandler,
-						  JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-						  @Qualifier("userDetailsService") UserDetailsService userDetailsService,
-						  BCryptPasswordEncoder bCryptPasswordEncoder) {
+			JwtAccessDeniedHandler jwtAccessDeniedHandler,
+			JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+			@Qualifier("userDetailsService") UserDetailsService userDetailsService,
+			BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.jwtAuthorizationFilter = jwtAuthorizationFilter;
 		this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
@@ -50,8 +50,8 @@ public class SecurityConfig {
 		authenticationManagerBuilder.userDetailsService(userDetailsService)
 				.passwordEncoder(bCryptPasswordEncoder);
 
-		return http.csrf().disable().cors().and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		return http.csrf().disable().cors().and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeHttpRequests(auth ->
 					{
 						auth.requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll();
@@ -61,12 +61,6 @@ public class SecurityConfig {
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 				.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) 
-			throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 }
