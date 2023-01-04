@@ -27,6 +27,7 @@ import io.github.arthurcech.dhaulagiri.exceptions.entities.EmailExistException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UserNotFoundException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UsernameExistException;
 import io.github.arthurcech.dhaulagiri.repositories.UserRepository;
+import io.github.arthurcech.dhaulagiri.services.EmailService;
 import io.github.arthurcech.dhaulagiri.services.LoginAttemptService;
 import io.github.arthurcech.dhaulagiri.services.UserService;
 import jakarta.transaction.Transactional;
@@ -39,12 +40,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private final UserRepository repository;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final LoginAttemptService loginAttemptService;
+	private final EmailService emailService;
 
 	public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder,
-			LoginAttemptService loginAttemptService) {
+			LoginAttemptService loginAttemptService, EmailService emailService) {
 		this.repository = repository;
 		this.passwordEncoder = passwordEncoder;
 		this.loginAttemptService = loginAttemptService;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -77,6 +80,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.setProfileImageUrl(getTemporaryProfileImageUrl(username)).build();
 
 		repository.save(user);
+
+		emailService.sendNewPasswordEmail(firstName, password, email);
 
 		return user;
 	}
