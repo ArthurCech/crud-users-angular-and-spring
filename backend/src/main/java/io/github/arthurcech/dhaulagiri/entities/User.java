@@ -57,6 +57,24 @@ public class User implements Serializable {
 		this.isNotLocked = isNotLocked;
 	}
 
+	public User(Builder builder) {
+		this.id = builder.id;
+		this.userId = builder.userId;
+		this.firstName = builder.firstName;
+		this.lastName = builder.lastName;
+		this.username = builder.username;
+		this.password = builder.password;
+		this.email = builder.email;
+		this.profileImageUrl = builder.profileImageUrl;
+		this.lastLoginDate = builder.lastLoginDate;
+		this.lastLoginDateDisplay = builder.lastLoginDateDisplay;
+		this.joinDate = builder.joinDate;
+		this.role = builder.role;
+		this.authorities = builder.authorities;
+		this.isActive = builder.isActive;
+		this.isNotLocked = builder.isNotLocked;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -175,6 +193,106 @@ public class User implements Serializable {
 
 	public void setNotLocked(boolean isNotLocked) {
 		this.isNotLocked = isNotLocked;
+	}
+
+	public static class Builder {
+		private Long id;
+		private String userId;
+		private String firstName;
+		private String lastName;
+		private String username;
+		private String password;
+		private String email;
+		private String profileImageUrl;
+		private Date lastLoginDate;
+		private Date lastLoginDateDisplay;
+		private Date joinDate;
+		private String role;
+		private String[] authorities;
+		private boolean isActive;
+		private boolean isNotLocked;
+
+		public Builder() {
+		}
+
+		public Builder setId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder setUserId(String userId) {
+			this.userId = userId;
+			return this;
+		}
+
+		public Builder setFirstName(String firstName) {
+			this.firstName = firstName;
+			return this;
+		}
+
+		public Builder setLastName(String lastName) {
+			this.lastName = lastName;
+			return this;
+		}
+
+		public Builder setUsername(String username) {
+			this.username = username;
+			return this;
+		}
+
+		public Builder setPassword(String password) {
+			this.password = password;
+			return this;
+		}
+
+		public Builder setEmail(String email) {
+			this.email = email;
+			return this;
+		}
+
+		public Builder setProfileImageUrl(String profileImageUrl) {
+			this.profileImageUrl = profileImageUrl;
+			return this;
+		}
+
+		public Builder setLastLoginDate(Date lastLoginDate) {
+			this.lastLoginDate = lastLoginDate;
+			return this;
+		}
+
+		public Builder setLastLoginDateDisplay(Date lastLoginDateDisplay) {
+			this.lastLoginDateDisplay = lastLoginDateDisplay;
+			return this;
+		}
+
+		public Builder setJoinDate(Date joinDate) {
+			this.joinDate = joinDate;
+			return this;
+		}
+
+		public Builder setRole(String role) {
+			this.role = role;
+			return this;
+		}
+
+		public Builder setAuthorities(String[] authorities) {
+			this.authorities = authorities;
+			return this;
+		}
+
+		public Builder setActive(boolean isActive) {
+			this.isActive = isActive;
+			return this;
+		}
+
+		public Builder setNotLocked(boolean isNotLocked) {
+			this.isNotLocked = isNotLocked;
+			return this;
+		}
+
+		public User build() {
+			return new User(this);
+		}
 	}
 
 }
