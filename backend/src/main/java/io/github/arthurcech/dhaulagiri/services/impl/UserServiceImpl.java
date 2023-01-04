@@ -53,11 +53,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(
 						ServiceConstant.USER_NOT_FOUND.formatted(username)));
 		validateLoginAttempt(user);
-		// TODO: remove this two set from here
+		repository.save(user);
+		return new UserPrincipal(user);
+	}
+
+	@Override
+	public void setLastLoginDate(User user) {
 		user.setLastLoginDateDisplay(user.getLastLoginDate());
 		user.setLastLoginDate(new Date());
 		repository.save(user);
-		return new UserPrincipal(user);
 	}
 
 	@Override

@@ -28,4 +28,6 @@ public interface UserService {
 //
 //	User updateProfileImage(String username, MultipartFile profileImage);
 
+	void setLastLoginDate(User user);
+
 }

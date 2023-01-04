@@ -46,6 +46,7 @@ public class UserController {
 		User loginUser = service.findByUsername(user.getUsername()).get();
 		UserPrincipal userPrincipal = new UserPrincipal(loginUser);
 		HttpHeaders headers = getTokenHeader(userPrincipal);
+		service.setLastLoginDate(loginUser);
 		return ResponseEntity.ok().headers(headers).body(loginUser);
 	}
 
@@ -65,7 +66,8 @@ public class UserController {
 	}
 
 	private void authenticate(String username, String password) {
-		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 
 }
