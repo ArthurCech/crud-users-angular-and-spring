@@ -27,6 +27,7 @@ import io.github.arthurcech.dhaulagiri.exceptions.entities.EmailExistException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UserNotFoundException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UsernameExistException;
 import io.github.arthurcech.dhaulagiri.repositories.UserRepository;
+import io.github.arthurcech.dhaulagiri.services.LoginAttemptService;
 import io.github.arthurcech.dhaulagiri.services.UserService;
 import jakarta.transaction.Transactional;
 
@@ -37,10 +38,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	private final UserRepository repository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final LoginAttemptService loginAttemptService;
 
-	public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder) {
+	public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder,
+			LoginAttemptService loginAttemptService) {
 		this.repository = repository;
 		this.passwordEncoder = passwordEncoder;
+		this.loginAttemptService = loginAttemptService;
 	}
 
 	@Override
@@ -48,6 +52,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		User user = repository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException(
 						ServiceConstant.USER_NOT_FOUND.formatted(username)));
+		validateLoginAttempt(user);
+		// TODO: remove this two set from here
 		user.setLastLoginDateDisplay(user.getLastLoginDate());
 		user.setLastLoginDate(new Date());
 		repository.save(user);
@@ -133,6 +139,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private String getTemporaryProfileImageUrl(String username) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
+	}
+
+	private void validateLoginAttempt(User user) {
+		if (user.isNotLocked()) {
+			if (loginAttemptService.userExceededAttempts(user.getUsername())) {
+				user.setNotLocked(false);
+			} else {
+				user.setNotLocked(true);
+			}
+		} else {
+			loginAttemptService.removeUserFromLoginCache(user.getUsername());
+		}
 	}
 
 }
