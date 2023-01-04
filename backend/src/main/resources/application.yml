@@ -1,5 +1,7 @@
 server:
   port: 8081
+  error:
+    path: /error
 jwt:
   secret: 'supersecret'
 spring:
@@ -14,3 +16,4 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+        
