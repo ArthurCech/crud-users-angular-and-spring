@@ -1,5 +1,6 @@
 package io.github.arthurcech.dhaulagiri.services.impl;
 
+import static io.github.arthurcech.dhaulagiri.constants.FileConstant.DEFAULT_USER_IMAGE_PATH;
 import static io.github.arthurcech.dhaulagiri.constants.ServiceConstant.EMAIL_ALREADY_EXISTS;
 import static io.github.arthurcech.dhaulagiri.constants.ServiceConstant.USERNAME_ALREADY_EXISTS;
 import static io.github.arthurcech.dhaulagiri.constants.ServiceConstant.USER_NOT_FOUND;
@@ -19,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.github.arthurcech.dhaulagiri.constants.FileConstant;
 import io.github.arthurcech.dhaulagiri.constants.ServiceConstant;
 import io.github.arthurcech.dhaulagiri.entities.User;
 import io.github.arthurcech.dhaulagiri.entities.UserPrincipal;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public List<User> getUsers() {
-		return null;
+		return repository.findAll();
 	}
 
 	@Override
@@ -97,21 +97,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 			if (userByNewUsername.isPresent()
 					&& !currentUser.getId().equals(userByNewUsername.get().getId())) {
-				throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
+				throw new UsernameExistException(USERNAME_ALREADY_EXISTS.formatted(newUsername));
 			}
 			if (userByNewEmail.isPresent()
 					&& !currentUser.getId().equals(userByNewEmail.get().getId())) {
-				throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+				throw new EmailExistException(EMAIL_ALREADY_EXISTS.formatted(newEmail));
 			}
 
 			return currentUser;
 		}
 
 		if (userByNewUsername.isPresent()) {
-			throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
+			throw new UsernameExistException(USERNAME_ALREADY_EXISTS.formatted(newUsername));
 		}
 		if (userByNewEmail.isPresent()) {
-			throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+			throw new EmailExistException(EMAIL_ALREADY_EXISTS.formatted(newEmail));
 		}
 
 		return null;
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	private String getTemporaryProfileImageUrl(String username) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath()
-				.path(FileConstant.DEFAULT_USER_IMAGE_PATH + username).toUriString();
+				.path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
 	}
 
 }
