@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 		repository.save(user);
 
-		emailService.sendNewPasswordEmail(firstName, password, email);
+		// emailService.sendNewPasswordEmail(firstName, password, email);
 
 		return user;
 	}
@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 		repository.save(user);
 
-		emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
+		// emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
 	}
 
 	@Override
