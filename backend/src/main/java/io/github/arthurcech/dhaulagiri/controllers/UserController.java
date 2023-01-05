@@ -1,16 +1,24 @@
 package io.github.arthurcech.dhaulagiri.controllers;
 
+import static io.github.arthurcech.dhaulagiri.constants.ControllerConstant.EMAIL_SENT;
+import static io.github.arthurcech.dhaulagiri.constants.ControllerConstant.USER_DELETED_SUCCESSFULLY;
 import static io.github.arthurcech.dhaulagiri.constants.SecurityConstant.TOKEN_HEADER;
+import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,8 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.github.arthurcech.dhaulagiri.constants.ServiceConstant;
+import io.github.arthurcech.dhaulagiri.entities.HttpResponse;
 import io.github.arthurcech.dhaulagiri.entities.User;
 import io.github.arthurcech.dhaulagiri.entities.UserPrincipal;
+import io.github.arthurcech.dhaulagiri.exceptions.entities.UserNotFoundException;
 import io.github.arthurcech.dhaulagiri.services.UserService;
 import io.github.arthurcech.dhaulagiri.utils.JwtTokenProvider;
 
@@ -76,6 +87,44 @@ public class UserController {
 		return ResponseEntity.created(uri).body(newUser);
 	}
 
+	@PutMapping(value = "/update")
+	public ResponseEntity<User> update(@RequestParam String currentUsername,
+			@RequestParam String firstName, @RequestParam String lastName,
+			@RequestParam String username, @RequestParam String email, @RequestParam String role,
+			@RequestParam String isActive, @RequestParam String isNonLocked,
+			@RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+			throws IOException {
+		User updatedUser = service.updateUser(currentUsername, firstName, lastName, username, email,
+				role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive),
+				profileImage);
+		return ResponseEntity.ok(updatedUser);
+	}
+
+	@GetMapping(value = "/find/{username}")
+	public ResponseEntity<User> getUser(@PathVariable String username) {
+		User user = service.findByUsername(username).orElseThrow(() -> new UserNotFoundException(
+				ServiceConstant.USER_NOT_FOUND.formatted(username)));
+		return ResponseEntity.ok(user);
+	}
+
+	@GetMapping(value = "/list")
+	public List<User> getAllUsers() {
+		return service.getUsers();
+	}
+
+	@GetMapping(value = "/resetpassword/{email}")
+	public ResponseEntity<HttpResponse> resetPassword(@PathVariable String email) {
+		service.resetPassword(email);
+		return response(OK, EMAIL_SENT + email);
+	}
+
+	@DeleteMapping(value = "/delete/{username}")
+	public ResponseEntity<HttpResponse> deleteUser(@PathVariable String username)
+			throws IOException {
+		service.deleteUser(username);
+		return response(OK, USER_DELETED_SUCCESSFULLY);
+	}
+
 	private HttpHeaders getTokenHeader(UserPrincipal userPrincipal) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(TOKEN_HEADER, jwtTokenProvider.generateJwtToken(userPrincipal));
@@ -85,6 +134,11 @@ public class UserController {
 	private void authenticate(String username, String password) {
 		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+	}
+
+	private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+		return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus,
+				httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
 	}
 
 }
