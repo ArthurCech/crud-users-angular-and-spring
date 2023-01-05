@@ -30,27 +30,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   public onLogin(user: User): void {
     this.isLoading = true;
-    // this.subscriptions.push(
-    //   this.authService.login(user).subscribe(
-    //     (response: HttpResponse<User>) => {
-    //       const token = response.headers.get(HeaderType.TOKEN);
-    //       this.authService.saveToken(token);
-    //       this.authService.addUserToLocalStorage(response.body);
-    //       this.router.navigateByUrl('/user/management');
-    //       this.showLoading = false;
-    //     },
-    //     (errorResponse: HttpErrorResponse) => {
-    //       this.sendErrorNotification(NotificationType.ERROR, errorResponse.error.message);
-    //       this.showLoading = false;
-    //     }
-    //   )
-    // );
-
     this.subscriptions.push(
       this.authService.login(user).subscribe(
         {
           next: (res: HttpResponse<User>) => {
-            console.log(res)
             const token = res.headers.get(HeaderType.TOKEN);
             this.authService.saveToken(token);
             this.authService.addUserToLocalStorage(res.body);
@@ -58,7 +41,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           },
           error: (err: HttpErrorResponse) => {
             this.sendErrorNotification(NotificationType.ERROR, err.error.message);
-
           },
           complete: () => {
             this.isLoading = false;

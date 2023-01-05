@@ -47,7 +47,7 @@ export class AuthenticationService {
   }
 
   public loadTokenFromLocalStorage(): void {
-    this.accessToken = localStorage.getItem('token');
+    this.accessToken = localStorage.getItem('accessToken');
   }
 
   public getToken(): string {
@@ -56,7 +56,6 @@ export class AuthenticationService {
 
   public isUserLoggedIn(): boolean {
     this.loadTokenFromLocalStorage();
-
     if (
       this.accessToken != null && this.accessToken !== '' &&
       this.jwtHelper.decodeToken(this.accessToken).sub != null &&
