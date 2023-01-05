@@ -33,6 +33,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import io.github.arthurcech.dhaulagiri.entities.HttpResponse;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.EmailExistException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.EmailNotFoundException;
+import io.github.arthurcech.dhaulagiri.exceptions.entities.NotAnImageFileException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UserNotFoundException;
 import io.github.arthurcech.dhaulagiri.exceptions.entities.UsernameExistException;
 import jakarta.persistence.NoResultException;
@@ -95,6 +96,11 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<HttpResponse> handleException() {
 		return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+	}
+
+	@ExceptionHandler(NotAnImageFileException.class)
+	public ResponseEntity<HttpResponse> handleNotAnImageFileException(NotAnImageFileException e) {
+		return createHttpResponse(BAD_REQUEST, e.getMessage());
 	}
 
 	@ExceptionHandler(NoResultException.class)
