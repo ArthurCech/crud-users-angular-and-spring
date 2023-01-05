@@ -12,8 +12,9 @@ export class AuthenticationService {
   public api = environment.api;
   private accessToken: string;
   private loggedInUsername: string;
+  private jwtHelper = new JwtHelperService();
 
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService) { }
+  constructor(private http: HttpClient) { }
 
   public login(user: User): Observable<HttpResponse<User>> {
     return this.http.post<User>(`${this.api}/users/login`,
@@ -56,13 +57,13 @@ export class AuthenticationService {
   public isUserLoggedIn(): boolean {
     this.loadTokenFromLocalStorage();
 
-    const sub = this.jwtHelper.decodeToken(this.accessToken).sub;
-
     if (
       this.accessToken != null && this.accessToken !== '' &&
-      sub != null && sub !== '' && !this.isTokenExpired()
+      this.jwtHelper.decodeToken(this.accessToken).sub != null &&
+      this.jwtHelper.decodeToken(this.accessToken).sub !== '' &&
+      !this.isTokenExpired()
     ) {
-      this.loggedInUsername = sub;
+      this.loggedInUsername = this.jwtHelper.decodeToken(this.accessToken).sub;
       return true;
     } else {
       this.logOut();
