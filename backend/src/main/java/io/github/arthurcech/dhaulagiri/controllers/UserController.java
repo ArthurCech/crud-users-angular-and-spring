@@ -2,11 +2,20 @@ package io.github.arthurcech.dhaulagiri.controllers;
 
 import static io.github.arthurcech.dhaulagiri.constants.ControllerConstant.EMAIL_SENT;
 import static io.github.arthurcech.dhaulagiri.constants.ControllerConstant.USER_DELETED_SUCCESSFULLY;
+import static io.github.arthurcech.dhaulagiri.constants.FileConstant.FORWARD_SLASH;
+import static io.github.arthurcech.dhaulagiri.constants.FileConstant.TEMP_PROFILE_IMAGE_BASE_URL;
+import static io.github.arthurcech.dhaulagiri.constants.FileConstant.USER_FOLDER;
 import static io.github.arthurcech.dhaulagiri.constants.SecurityConstant.TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.http.HttpHeaders;
@@ -123,6 +132,39 @@ public class UserController {
 			throws IOException {
 		service.deleteUser(username);
 		return response(OK, USER_DELETED_SUCCESSFULLY);
+	}
+
+	@PostMapping(value = "/update-profile-image")
+	public ResponseEntity<User> updateProfileImage(@RequestParam String username,
+			@RequestParam MultipartFile profileImage) throws IOException {
+		User user = service.updateProfileImage(username, profileImage);
+		return ResponseEntity.ok(user);
+	}
+
+	@GetMapping(value = "/image/{username}/{fileName}", produces = IMAGE_JPEG_VALUE)
+	public byte[] getProfileImage(@PathVariable String username, @PathVariable String fileName)
+			throws IOException {
+		return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + fileName));
+	}
+
+	@GetMapping(value = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
+	public byte[] getTempProfileImage(@PathVariable("username") String username)
+			throws IOException {
+		URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+		try (InputStream inputStream = url.openStream()) {
+			int bytesRead;
+
+			byte[] chunk = new byte[1024];
+
+			while ((bytesRead = inputStream.read(chunk)) > 0) {
+				byteArrayOutputStream.write(chunk, 0, bytesRead);
+			}
+		}
+
+		return byteArrayOutputStream.toByteArray();
 	}
 
 	private HttpHeaders getTokenHeader(UserPrincipal userPrincipal) {
