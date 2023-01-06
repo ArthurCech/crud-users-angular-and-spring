@@ -38,7 +38,8 @@
       <div class="mb-3 float-right">
         <div class="btn-group mr-2">
           <form class="form-inline my-2 my-lg-0 justify-content-center">
-            <input name="searchTerm" class="form-control mr-sm-2" type="search" placeholder="Search users">
+            <input name="searchTerm" #searchTermInput="ngModel" (ngModelChange)="searchUsers(searchTermInput.value)"
+              class="form-control mr-sm-2" type="search" placeholder="Search users" ngModel>
           </form>
           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addUserModal">
             <i class="fa fa-plus"></i>New User

@@ -99,6 +99,22 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
+  public searchUsers(searchTerm: string): void {
+    const results: User[] = [];
+    for (const user of this.userService.getUsersFromLocalStorage()) {
+      if (user.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.username.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.userId.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+        results.push(user);
+      }
+    }
+    this.users = results;
+    if (results.length === 0 || !searchTerm) {
+      this.users = this.userService.getUsersFromLocalStorage();
+    }
+  }
+
   private sendNotification(type: NotificationType, message: string): void {
     if (message) {
       this.notificationService.notify(type, message);
