@@ -340,5 +340,25 @@
         </div>
       </div>
     </div>
+
+    <!-- change password  -->
+    <div class="tab-pane fade" id="reset-password">
+      <form #resetPasswordForm="ngForm" (ngSubmit)="onResetPassword(resetPasswordForm)">
+        <fieldset>
+          <legend>Reset Password</legend>
+          <div class="form-group">
+            <label for="emailAddress">Email address</label>
+            <input type="email" name="reset-password-email" required ngModel class="form-control"
+              placeholder="Enter email (example@email.com)" id="emailAddress">
+            <small class="form-text text-muted">We'll never share your email with anyone else</small>
+          </div>
+          <button type="submit" [disabled]="resetPasswordForm.invalid" class="btn btn-primary">
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            <span *ngIf="isLoading">&nbsp;&nbsp;Loading...</span>
+            <span *ngIf="!isLoading">Reset Password</span>
+          </button>
+        </fieldset>
+      </form>
+    </div>
   </div>
 </div>

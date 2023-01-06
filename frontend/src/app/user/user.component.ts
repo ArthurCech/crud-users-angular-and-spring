@@ -160,6 +160,24 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
+  public onResetPassword(form: NgForm): void {
+    this.isLoading = true;
+    const emailAddress = form.value['reset-password-email'];
+    this.subscriptions.push(
+      this.userService.resetPassword(emailAddress).subscribe({
+        next: (res: CustomHttpResponse) => {
+          this.sendNotification(NotificationType.SUCCESS, res.message);
+          this.isLoading = false;
+          form.reset();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.WARNING, err.error.message);
+          this.isLoading = false;
+        }
+      })
+    );
+  }
+
   private sendNotification(type: NotificationType, message: string): void {
     if (message) {
       this.notificationService.notify(type, message);
