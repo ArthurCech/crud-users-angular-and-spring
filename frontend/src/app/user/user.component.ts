@@ -19,11 +19,14 @@ export class UserComponent implements OnInit, OnDestroy {
 
   public isLoading: boolean;
 
-  public users: User[];
+  public users: User[] = [];
   public selectedUser: User;
 
   public fileName: string;
   public profileImage: File;
+
+  public editUser: User = new User();
+  public currentUsername: string;
 
   constructor(private userService: UserService,
     private notificationService: NotificationService) { }
@@ -113,6 +116,33 @@ export class UserComponent implements OnInit, OnDestroy {
     if (results.length === 0 || !searchTerm) {
       this.users = this.userService.getUsersFromLocalStorage();
     }
+  }
+
+  public onEdit(user: User): void {
+    this.editUser = user;
+    this.currentUsername = user.username;
+    document.getElementById('openUserEdit').click();
+  }
+
+  public onUpdateUser(): void {
+    const formData = this.userService.createUserFormDate(this.currentUsername, this.editUser, this.profileImage);
+    this.subscriptions.push(
+      this.userService.updateUser(formData).subscribe({
+        next: (user: User) => {
+          document.getElementById('closeEditUserModalButton').click();
+          this.getUsers(false);
+          this.sendNotification(NotificationType.SUCCESS,
+            `${user.firstName} ${user.lastName} updated successfully`);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, err.error.message);
+        },
+        complete: () => {
+          this.profileImage = null;
+          this.fileName = null;
+        }
+      })
+    );
   }
 
   private sendNotification(type: NotificationType, message: string): void {
