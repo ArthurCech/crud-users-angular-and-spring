@@ -6,12 +6,12 @@ import { CustomHttpResponse } from '../model/custom-http-response.model';
 import { User } from '../model/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private api = environment.api;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   public getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.api}/users/list`);
@@ -26,19 +26,26 @@ export class UserService {
   }
 
   public resetPassword(email: string): Observable<CustomHttpResponse> {
-    return this.http.get<CustomHttpResponse>(`${this.api}/users/resetpassword/${email}`);
+    return this.http.get<CustomHttpResponse>(
+      `${this.api}/users/resetpassword/${email}`
+    );
   }
 
-  public updateProfileImage(formData: FormData): Observable<HttpEvent<User>> {
-    return this.http.post<User>(`${this.api}/users/update-profile-image`, formData,
+  public updateProfileImage(formData: FormData): Observable<HttpEvent<any>> {
+    return this.http.post<any>(
+      `${this.api}/users/update-profile-image`,
+      formData,
       {
         reportProgress: true,
-        observe: 'events'
-      });
+        observe: 'events',
+      }
+    );
   }
 
   public deleteUser(username: string): Observable<CustomHttpResponse> {
-    return this.http.delete<CustomHttpResponse>(`${this.api}/users/delete/${username}`);
+    return this.http.delete<CustomHttpResponse>(
+      `${this.api}/users/delete/${username}`
+    );
   }
 
   public addUsersToLocalCache(users: User[]): void {
@@ -51,7 +58,11 @@ export class UserService {
     return null;
   }
 
-  public createUserFormDate(loggedInUsername: string, user: User, profileImage: File): FormData {
+  public createUserFormDate(
+    loggedInUsername: string,
+    user: User,
+    profileImage: File
+  ): FormData {
     const formData = new FormData();
     formData.append('currentUsername', loggedInUsername);
     formData.append('firstName', user.firstName);
