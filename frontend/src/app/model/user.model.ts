@@ -10,8 +10,8 @@ export class User {
   public joinDate: Date;
   public role: string;
   public authorities: [];
-  public isActive: boolean;
-  public isNotLocked: boolean;
+  public active: boolean;
+  public notLocked: boolean;
 
   constructor() {
     this.userId = '';
@@ -25,7 +25,7 @@ export class User {
     this.joinDate = null;
     this.role = '';
     this.authorities = [];
-    this.isActive = false;
-    this.isNotLocked = false;
+    this.active = false;
+    this.notLocked = false;
   }
 }

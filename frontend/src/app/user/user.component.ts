@@ -19,7 +19,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
   public isLoading: boolean;
 
-  public users: User[] = [];
+  public users: User[];
   public selectedUser: User;
 
   public fileName: string;
@@ -51,6 +51,7 @@ export class UserComponent implements OnInit, OnDestroy {
               this.sendNotification(NotificationType.SUCCESS,
                 `${users.length} user(s) loaded successfully`);
             }
+            console.log(users)
           },
           error: (err: HttpErrorResponse) => {
             this.sendNotification(NotificationType.ERROR, err.error.message);
