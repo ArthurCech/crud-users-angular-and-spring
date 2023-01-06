@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { NotificationType } from '../enum/notification-type.enum';
+import { CustomHttpResponse } from '../model/custom-http-response.model';
 import { User } from '../model/user.model';
 import { NotificationService } from '../service/notification.service';
 import { UserService } from '../service/user.service';
@@ -51,7 +52,6 @@ export class UserComponent implements OnInit, OnDestroy {
               this.sendNotification(NotificationType.SUCCESS,
                 `${users.length} user(s) loaded successfully`);
             }
-            console.log(users)
           },
           error: (err: HttpErrorResponse) => {
             this.sendNotification(NotificationType.ERROR, err.error.message);
@@ -141,6 +141,20 @@ export class UserComponent implements OnInit, OnDestroy {
         complete: () => {
           this.profileImage = null;
           this.fileName = null;
+        }
+      })
+    );
+  }
+
+  public onDelete(username: string): void {
+    this.subscriptions.push(
+      this.userService.deleteUser(username).subscribe({
+        next: (res: CustomHttpResponse) => {
+          this.sendNotification(NotificationType.SUCCESS, res.message);
+          this.getUsers(false);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, err.error.message);
         }
       })
     );
