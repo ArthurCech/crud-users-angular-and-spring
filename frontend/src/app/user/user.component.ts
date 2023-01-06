@@ -19,6 +19,7 @@ export class UserComponent implements OnInit, OnDestroy {
   public isLoading: boolean;
 
   public users: User[];
+  public selectedUser: User;
 
   constructor(private userService: UserService,
     private notificationService: NotificationService) { }
@@ -54,6 +55,11 @@ export class UserComponent implements OnInit, OnDestroy {
       )
     );
 
+  }
+
+  public onSelectUser(user: User): void {
+    this.selectedUser = user;
+    document.getElementById('openUserInfo').click();
   }
 
   private sendNotification(type: NotificationType, message: string): void {
