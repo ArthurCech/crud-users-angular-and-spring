@@ -38,12 +38,12 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.authService.saveToken(token);
             this.authService.addUserToLocalStorage(res.body);
             this.router.navigate(['/users/management']);
+            this.isLoading = false;
           },
           error: (err: HttpErrorResponse) => {
             this.sendErrorNotification(NotificationType.ERROR, err.error.message);
-          },
-          complete: () => {
             this.isLoading = false;
+
           }
         }
       )

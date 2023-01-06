@@ -1,10 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { NotificationType } from '../enum/notification-type.enum';
 import { CustomHttpResponse } from '../model/custom-http-response.model';
 import { User } from '../model/user.model';
+import { AuthenticationService } from '../service/authentication.service';
 import { NotificationService } from '../service/notification.service';
 import { UserService } from '../service/user.service';
 
@@ -21,6 +23,7 @@ export class UserComponent implements OnInit, OnDestroy {
   public isLoading: boolean;
 
   public users: User[];
+  public user: User;
   public selectedUser: User;
 
   public fileName: string;
@@ -30,10 +33,13 @@ export class UserComponent implements OnInit, OnDestroy {
   public currentUsername: string;
 
   constructor(private userService: UserService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    private authService: AuthenticationService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.getUsers(true);
+    this.user = this.authService.getUserFromLocalStorage();
   }
 
   public changeTitle(title: string): void {
@@ -176,6 +182,39 @@ export class UserComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  public onUpdateCurrentUser(user: User): void {
+    this.isLoading = true;
+    this.currentUsername = this.authService.getUserFromLocalStorage().username;
+    const formData = this.userService
+      .createUserFormDate(this.currentUsername, user, this.profileImage);
+    this.subscriptions.push(
+      this.userService.updateUser(formData).subscribe({
+        next: (user: User) => {
+          this.isLoading = false;
+          this.authService.addUserToLocalStorage(user);
+          this.getUsers(false);
+          this.fileName = null;
+          this.profileImage = null;
+          this.sendNotification(NotificationType.SUCCESS,
+            `${user.firstName} ${user.lastName} updated successfully`);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isLoading = false;
+          this.sendNotification(NotificationType.ERROR, err.error.message);
+          this.fileName = null;
+          this.profileImage = null;
+        }
+      })
+    );
+  }
+
+  public onLogOut(): void {
+    this.authService.logOut();
+    this.router.navigate(['/login']);
+    this.sendNotification(NotificationType.SUCCESS,
+      `You've been successfully logged out`);
   }
 
   private sendNotification(type: NotificationType, message: string): void {
