@@ -22,7 +22,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.authService.isUserLoggedIn()) {
-      this.router.navigateByUrl('/user/management');
+      this.router.navigateByUrl('/users/management');
     }
   }
 
@@ -50,7 +50,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (message) {
       this.notificationService.notify(notificationType, message);
     } else {
-      this.notificationService.notify(notificationType, 'An error occurred. Please try again.');
+      this.notificationService.notify(notificationType, 'An error occurred. Please, try again');
     }
   }
 
