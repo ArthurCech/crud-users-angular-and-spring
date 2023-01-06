@@ -22,7 +22,7 @@ export class UserService {
   }
 
   public updateUser(formData: FormData): Observable<User> {
-    return this.http.post<User>(`${this.api}/users/update`, formData);
+    return this.http.put<User>(`${this.api}/users/update`, formData);
   }
 
   public resetPassword(email: string): Observable<CustomHttpRespone> {
