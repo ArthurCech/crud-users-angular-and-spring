@@ -8,12 +8,16 @@ import { UserComponent } from './user/user.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'users/management', component: UserComponent, canActivate: [AuthenticationGuard] },
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  {
+    path: 'users/management',
+    component: UserComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

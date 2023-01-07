@@ -3,17 +3,19 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from '../service/authentication.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  constructor(private authService: AuthenticationService) {}
 
-  constructor(private authService: AuthenticationService) { }
-
-  intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    httpRequest: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     if (httpRequest.url.includes(`${this.authService.api}/users/login`)) {
       return next.handle(httpRequest);
     }
@@ -22,7 +24,9 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     this.authService.loadTokenFromLocalStorage();
     const token = this.authService.getToken();
-    const request = httpRequest.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    const request = httpRequest.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    });
     return next.handle(request);
   }
 }
