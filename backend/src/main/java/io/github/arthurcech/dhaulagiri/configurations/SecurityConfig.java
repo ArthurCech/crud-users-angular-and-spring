@@ -54,7 +54,10 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth ->
 					{
 						auth.requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll();
-						auth.requestMatchers(HttpMethod.DELETE, "/users/delete/**").hasAnyAuthority("user:delete");
+						auth.requestMatchers(HttpMethod.DELETE, "/users/delete/**")
+								.hasAnyAuthority("user:delete");
+						auth.requestMatchers(HttpMethod.GET, "/users/resetpassword/**")
+								.hasAnyRole("ADMIN", "SUPER_ADMIN");
 						auth.anyRequest().authenticated();
 					})
 				.exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler)
