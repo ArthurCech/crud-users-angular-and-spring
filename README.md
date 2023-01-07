@@ -4,7 +4,7 @@
 
 Dhaulagiri is an application developed in Spring Boot and Angular while I was doing some courses.
 
-The purpose of this system is simple, it allows managament of users. The operations allowed are: create, update, delete and find users.
+The purpose of this system is simple, it allows management of users. The operations allowed are: create, update, delete and find users.
 
 The application was protected using Spring Security, JWT token. Some resources are protected by the role and authorities of the logged in user.
 
