@@ -30,8 +30,8 @@ The application was protected using Spring Security, JWT token. Some resources a
 ### First steps
 
 - [OPTIONAL] Run the docker-compose (`docker-compose up`) if you don't have MySQL installed locally
-- [OPTIONAL] If you want to enable the email service, you have to uncomment some lines of `UserService` and configure the `EmailService` with your credentials
-- [OPTIONAL] If you want to let the system generates the password, you can uncomment the lines where the method to generate the passwords is called
+- [OPTIONAL] If you want to enable the email service to send email for users, you have to uncomment some lines of `UserService` and configure the `EmailService` with your credentials
+- [OPTIONAL] If you want to let the system generates the password for created users, you can uncomment the lines where the method to generate the passwords is called
 
 ### (1) Back end
 
