@@ -309,15 +309,24 @@ export class UserComponent implements OnInit, OnDestroy {
     return this.authService.getUserFromLocalStorage().role;
   }
 
+  public get isSuperAdmin(): boolean {
+    return this.getUserRole() === Role.SUPER_ADMIN;
+  }
+
   public get isAdmin(): boolean {
-    return (
-      this.getUserRole() === Role.ADMIN ||
-      this.getUserRole() === Role.SUPER_ADMIN
-    );
+    return this.getUserRole() === Role.ADMIN;
   }
 
   public get isManager(): boolean {
-    return this.isAdmin || this.getUserRole() === Role.MANAGER;
+    return this.getUserRole() === Role.MANAGER;
+  }
+
+  public get isHr(): boolean {
+    return this.getUserRole() === Role.HR;
+  }
+
+  public get isUser(): boolean {
+    return this.getUserRole() === Role.USER;
   }
 
   ngOnDestroy(): void {
