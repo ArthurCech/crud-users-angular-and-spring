@@ -83,16 +83,16 @@ export class UserComponent implements OnInit, OnDestroy {
     document.getElementById('openUserInfo').click();
   }
 
-  public onProfileImageChange(event: Event): void {
-    this.profileImage = (<HTMLInputElement>event.target).files[0];
-    this.fileName = this.profileImage.name;
+  public onProfileImageChange(fileName: string, profileImage: File): void {
+    this.fileName = fileName;
+    this.profileImage = profileImage;
   }
 
-  public onSaveUser(): void {
+  public saveNewUser(): void {
     document.getElementById('new-user-save').click();
   }
 
-  public saveUser(userForm: NgForm): void {
+  public onAddNewUser(userForm: NgForm): void {
     const formData = this.userService.createUserFormDate(
       null,
       userForm.value,
@@ -119,30 +119,6 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
-  public searchUsers(searchTerm: string): void {
-    const results: User[] = [];
-    for (const user of this.userService.getUsersFromLocalStorage()) {
-      if (
-        user.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
-        user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
-        user.username.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
-        user.userId.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
-      ) {
-        results.push(user);
-      }
-    }
-    this.users = results;
-    if (results.length === 0 || !searchTerm) {
-      this.users = this.userService.getUsersFromLocalStorage();
-    }
-  }
-
-  public onEdit(user: User): void {
-    this.editUser = user;
-    this.currentUsername = user.username;
-    document.getElementById('openUserEdit').click();
-  }
-
   public onUpdateUser(): void {
     const formData = this.userService.createUserFormDate(
       this.currentUsername,
@@ -164,39 +140,6 @@ export class UserComponent implements OnInit, OnDestroy {
         error: (err: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, err.error.message);
           this.profileImage = null;
-        },
-      })
-    );
-  }
-
-  public onDelete(username: string): void {
-    this.subscriptions.push(
-      this.userService.deleteUser(username).subscribe({
-        next: (res: CustomHttpResponse) => {
-          this.sendNotification(NotificationType.SUCCESS, res.message);
-          this.getUsers(false);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.sendNotification(NotificationType.ERROR, err.error.message);
-        },
-      })
-    );
-  }
-
-  public onResetPassword(form: NgForm): void {
-    this.isLoading = true;
-    const emailAddress = form.value['reset-password-email'];
-    this.subscriptions.push(
-      this.userService.resetPassword(emailAddress).subscribe({
-        next: (res: CustomHttpResponse) => {
-          this.sendNotification(NotificationType.SUCCESS, res.message);
-          this.isLoading = false;
-          form.reset();
-        },
-        error: (err: HttpErrorResponse) => {
-          this.sendNotification(NotificationType.WARNING, err.error.message);
-          this.isLoading = false;
-          form.reset();
         },
       })
     );
@@ -232,19 +175,6 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
-  public onLogOut(): void {
-    this.authService.logOut();
-    this.router.navigate(['/login']);
-    this.sendNotification(
-      NotificationType.SUCCESS,
-      `You've been successfully logged out`
-    );
-  }
-
-  public updateProfileImage(): void {
-    document.getElementById('profile-image-input').click();
-  }
-
   public onUpdateProfileImage(): void {
     const formData = new FormData();
     formData.append('username', this.user.username);
@@ -260,6 +190,76 @@ export class UserComponent implements OnInit, OnDestroy {
         },
       })
     );
+  }
+
+  public updateProfileImage(): void {
+    document.getElementById('profile-image-input').click();
+  }
+
+  public onLogOut(): void {
+    this.authService.logOut();
+    this.router.navigate(['/login']);
+    this.sendNotification(
+      NotificationType.SUCCESS,
+      `You've been successfully logged out`
+    );
+  }
+
+  public onResetPassword(form: NgForm): void {
+    this.isLoading = true;
+    const emailAddress = form.value['reset-password-email'];
+    this.subscriptions.push(
+      this.userService.resetPassword(emailAddress).subscribe({
+        next: (res: CustomHttpResponse) => {
+          this.sendNotification(NotificationType.SUCCESS, res.message);
+          this.isLoading = false;
+          form.reset();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.WARNING, err.error.message);
+          this.isLoading = false;
+          form.reset();
+        },
+      })
+    );
+  }
+
+  public onDelete(username: string): void {
+    this.subscriptions.push(
+      this.userService.deleteUser(username).subscribe({
+        next: (res: CustomHttpResponse) => {
+          this.sendNotification(NotificationType.SUCCESS, res.message);
+          this.getUsers(false);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, err.error.message);
+        },
+      })
+    );
+  }
+
+  public onEdit(user: User): void {
+    this.editUser = user;
+    this.currentUsername = user.username;
+    document.getElementById('openUserEdit').click();
+  }
+
+  public searchUsers(searchTerm: string): void {
+    const results: User[] = [];
+    for (const user of this.userService.getUsersFromLocalStorage()) {
+      if (
+        user.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.username.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+        user.userId.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
+      ) {
+        results.push(user);
+      }
+    }
+    this.users = results;
+    if (results.length === 0 || !searchTerm) {
+      this.users = this.userService.getUsersFromLocalStorage();
+    }
   }
 
   private reportUploadProgress(event: HttpEvent<any>): void {
